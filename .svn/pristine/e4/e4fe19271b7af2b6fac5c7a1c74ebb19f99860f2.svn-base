@@ -1,0 +1,13 @@
+package com.example.apkattack;
+
+public abstract class Test {
+	
+	public void test(){
+		QQMusicPlugin.QQMusicPluginEntry();
+	}
+
+	
+	public static void teststatic(){
+		QQMusicPlugin.QQMusicPluginEntry();
+	}
+}

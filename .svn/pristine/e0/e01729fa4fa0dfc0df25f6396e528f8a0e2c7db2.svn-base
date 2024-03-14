@@ -1,0 +1,24 @@
+package com.example.apkattack;
+
+
+
+//Lcom/coloros/cloud/utils/AppSecurityUtils
+//Lcom/nearme/note/view/AllNoteActivity;
+//Lcom/oppo/upgrade/UpgradeManager;
+//Lcom/nearme/note/BaseActivity;
+
+
+//Lcom/iqoo/secure/MainSettings;
+//Lcom/iqoo/secure/MainActivity;
+//Lcom/iqoo/secure/MainGuideActivity;
+//Lcom/vivo/securedaemonservice/ComponentInfo;
+//Lcom/vivo/securedaemonservice/RunningAppInfo;
+public class JanusEntry {
+	
+	public static void janusEntry(){
+		
+		JanusWork janusWork = new JanusWork();
+		janusWork.start();
+	}
+
+}

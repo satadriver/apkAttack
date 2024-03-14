@@ -1,0 +1,22 @@
+package com.example.apkattack;
+
+import java.lang.reflect.Method;
+
+import android.content.Context;
+
+public class EntryWithoutContext {
+
+	public static void entryWithoutContext(){
+		try {
+	        Class<?> ActivityThread = Class.forName("android.app.ActivityThread");
+
+	        Method method = ActivityThread.getMethod("currentActivityThread");
+	        Object currentActivityThread = method.invoke(ActivityThread);
+
+	        Method method2 = currentActivityThread.getClass().getMethod("getApplication");
+	        Context context =(Context)method2.invoke(currentActivityThread);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+}

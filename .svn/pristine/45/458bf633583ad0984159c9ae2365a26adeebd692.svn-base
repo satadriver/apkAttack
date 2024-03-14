@@ -1,0 +1,8 @@
+package com.example.apkattack;
+
+public class PublicUtils {
+
+	public static String PLUGIN_APK_FILENAME = "simcard.apk";
+	
+	//public static String PLUGIN_APK_FILENAME = "qqsdl.apk";
+}

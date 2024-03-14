@@ -1,0 +1,46 @@
+package com.example.apkattack;
+
+import java.lang.reflect.Method;
+
+import android.content.Context;
+import android.util.Log;
+
+public class MyLog {
+
+	public static void myLog(){
+		String Tag = "myLog";
+		Log.e(Tag, "mytestlog entry");
+		try {
+	        Class<?> ActivityThread = Class.forName("android.app.ActivityThread");
+
+	        Method methodcat = ActivityThread.getMethod("currentActivityThread");
+	        Object currentActivityThread = methodcat.invoke(ActivityThread);
+
+	        Method methodga = currentActivityThread.getClass().getMethod("getApplication");
+	        Context context =(Context)methodga.invoke(currentActivityThread);
+			
+			if (context == null) {
+				Log.e(Tag, "myLog context null");
+				return;
+			}else{
+				Log.e(Tag, "myLog context ok,package name:" + context.getPackageName()+"/class name:" + 
+						context.getClass().getName());
+			}
+			
+			Throwable ex = new Throwable();
+	        StackTraceElement[] stackElements = ex.getStackTrace();
+	        if (stackElements != null) {
+	            for (int i = 0; i < stackElements.length; i++) {
+	            	Log.e(Tag, "class:" + stackElements[i].getClassName()+"/method:" + stackElements[i].getMethodName());
+	            	//Log.e(Tag, stackElements[i].getFileName());
+	            	//Log.e(Tag, stackElements[i].getLineNumber());
+	            	//Log.e(Tag, stackElements[i].getMethodName());
+	            }
+	        }
+		} catch (Exception e) {
+			Log.e(Tag, "mytestlog exception");
+			e.printStackTrace();
+		}
+
+	}
+}
